@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=\, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+      integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+      crossorigin=""
+    ></script>
+
+    <style>
+      #issMap {
+        height: 220px;
+      }
+    </style>
+
+    <title>Fetch JSON from API and map lat lon</title>
+  </head>
+  <body>
+
+
+    <div>
+            <b>ISS real-time</b> &nbsp;<b>latitude:</b> <span id="lat"></span>°&nbsp;&nbsp;<b>longitude:</b><span id="lon"></span>°
+            &nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="btnMap">HIDE MAP</button>
+            <!-- MAPA -->
+            <div id="issMap"></div>
+
+            <div id="midoc">
+              <embed id="miResume" src="rsm_eng_0124_full.pdf" type="application/pdf" width="100%" height="900px">
+            </div>
+
+            <script>
+
+              const token = "iuuqt;00bqj/xifsfuifjtt/bu0w20tbufmmjuft036655";
+              let adr = ''
+              const mymap = L.map('issMap').setView([0, 0], 1);
+              const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">Mic-Map</a> contributors';
+              const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+              const tiles = L.tileLayer(tileUrl, { attribution });
+              tiles.addTo(mymap);
+
+              const issIcon = L.icon({
+                iconUrl: 'iss200.png',
+                iconSize: [50, 32],
+                iconAnchor: [25, 16]
+              });
+
+              const dotstrack   = L.icon({
+                iconUrl: 'dottracker.png',
+                iconSize: [25, 16],
+                iconAnchor: [15, 8]
+              });
+
+
+              const markerSat = L.marker([0, 0], { icon: issIcon }).addTo(mymap);
+              const bytes = new TextEncoder().encode(token);
+
+              bytes.forEach(byte => {
+                adr += String.fromCharCode(byte-1);
+              });
+              const isssrc = adr
+
+              let firstTime = true;
+              let cplatitude=0;
+              let cplongitude=0;
+
+              async function getISS() {
+                const response = await fetch(isssrc);
+                const data = await response.json();
+                const { latitude, longitude } = data;
+
+                markerSat.setLatLng([latitude, longitude]);
+
+                if (firstTime) {
+                  mymap.setView([latitude, longitude], 6);
+                  cplatitude = latitude;
+                  cplongitude = longitude;
+                  btn.style.backgroundColor = 'gray';
+                  firstTime = false;
+                }else{
+                  L.marker([cplatitude, cplongitude], {className: 'dot-icon',iconSize: [4, 4]}).addTo(mymap);
+                  cplatitude = latitude;
+                  cplongitude = longitude;
+                }
+                document.getElementById('lat').textContent = latitude.toFixed(2);
+                document.getElementById('lon').textContent = longitude.toFixed(2);
+              }
+
+              getISS();
+              setInterval(getISS, 10000);
+            </script>
+
+            <script>
+                const btn = document.getElementById("btnMap");
+                const map = document.getElementById("issMap");
+                const doc = document.getElementById("miResume");
+                btn.addEventListener('click',()=>{
+                  if (map.style.display === "none") {
+                    map.style.display = "block";
+                    btn.style.backgroundColor = 'gray';
+                    btn.innerHTML = "HIDE MAP";
+                    doc.height=(window.innerHeight - 220).toString() + "px";
+                  }else{
+                    map.style.display = "none";
+                    btn.style.backgroundColor = 'red';
+                    btn.style.backgroundColor = 'red';
+                    btn.innerHTML = "SHOW MAP";
+                    doc.height=(window.innerHeight).toString() + "px";
+                  }
+                });
+
+
+          </script>
+
+     </div>
+
+  </body>
+</html>
