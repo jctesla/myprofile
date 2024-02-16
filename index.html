@@ -52,7 +52,7 @@
 
             
             <div id="midoc" align ="center" >
-              <b>You can <a href="rsm_eng_0124_full.pdf">click here to download the PDF file.</a></b>
+              <b>You can <a href="rsm_eng_0224_full.pdf">click here to download the PDF file.</a></b>
             </div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
             <script>
@@ -63,7 +63,7 @@
 
                   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                       pdf.getPage(pageNum).then(page => {
-                          const scale = 1.7;
+                          const scale = 1.9;
                           const viewport = page.getViewport({ scale });
 
                           const canvas = document.createElement('canvas');
