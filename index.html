@@ -18,7 +18,7 @@
 
     <style>
       #issMap {
-        height: 220px;
+        height: 180px;
       }
     </style>
 
@@ -37,7 +37,21 @@
           margin: 0 auto;
           border: 1px solid black;
       }
-    </style>
+ 
+      html, body {
+        width: 100%;
+        height: 100%;
+      }
+
+      body > div {
+        width: 100%;
+        height: 100%;
+      }
+
+      body > div > div {
+        width: 100%;
+      }
+      </style>
 
     <title>Fetch JSON from API and map lat lon</title>
   </head>
@@ -45,32 +59,37 @@
 
 
     <div>
-            <b>ISS real-time</b> &nbsp;<b>lat:</b> <span id="lat"></span>°&nbsp;&nbsp;<b>long:</b><span id="lon"></span>°
+            ISS Station (1sec) &nbsp;<b>lat:</b> <span id="lat"></span>°&nbsp;&nbsp;<b>long:</b><span id="lon"></span>°
             &nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="btnMap">HIDE MAP</button>
             <!-- MAPA -->
             <div id="issMap"></div>
 
             
             <div id="midoc" align ="center" >
-              <b>You can <a href="rsm_eng_0224_full.pdf">click here to download the PDF file.</a></b>
+              <b>for download PDF format <a href="rsm_eng_0224_full.pdf">click here</a></b>
             </div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
             <script>
                 const pdfViewer = document.getElementById('midoc');
         
-                pdfjsLib.getDocument('rsm_eng_0124_full.pdf').promise.then(pdf => {
+                pdfjsLib.getDocument('rsm_eng_0224_full.pdf').promise.then(pdf => {
                   const totalPages = pdf.numPages;
 
                   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                       pdf.getPage(pageNum).then(page => {
-                          const scale = 1.9;
+                          const scale = 1.2;
                           const viewport = page.getViewport({ scale });
-
+                          const outputScale = window.devicePixelRatio || 1;
                           const canvas = document.createElement('canvas');
+                         
+                          //canvas.height = viewport.height;
+                          //canvas.width = viewport.width;
+                          canvas.width = Math.floor(viewport.width * outputScale);
+                          canvas.height = Math.floor(viewport.height * outputScale);
+                          canvas.style.width = Math.floor(viewport.width) + "px";
+                          canvas.style.height =  Math.floor(viewport.height) + "px";
                           const context = canvas.getContext('2d');
-                          canvas.height = viewport.height;
-                          canvas.width = viewport.width;
-
+                          
                           const renderContext = {
                               canvasContext: context,
                               viewport: viewport
@@ -91,7 +110,7 @@
               const token = "iuuqt;00bqj/xifsfuifjtt/bu0w20tbufmmjuft036655";
               let adr = ''
               const mymap = L.map('issMap').setView([0, 0], 1);
-              const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">Mic-Map</a> contributors';
+              const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">Mic-Map </a>&nbsp;&nbsp;';
               const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
               const tiles = L.tileLayer(tileUrl, { attribution });
               tiles.addTo(mymap);
@@ -120,6 +139,7 @@
               let firstTime = true;
               let cplatitude=0;
               let cplongitude=0;
+              let count=0;
 
               async function getISS() {
                 const response = await fetch(isssrc);
@@ -135,6 +155,10 @@
                   btn.style.backgroundColor = 'lightblue';
                   firstTime = false;
                 }else{
+                  if (++count>3){
+                    mymap.setView([latitude, longitude], 6);
+                    count=0
+                  }
                   L.marker([cplatitude, cplongitude], {className: 'dot-icon',iconSize: [4, 4]}).addTo(mymap);
                   cplatitude = latitude;
                   cplongitude = longitude;
@@ -156,7 +180,7 @@
                     map.style.display = "block";
                     btn.style.backgroundColor = 'lightblue';
                     btn.innerHTML = "HIDE MAP";
-                    doc.height=(window.innerHeight - 220).toString() + "px";
+                    doc.height=(window.innerHeight - 180).toString() + "px";
                   }else{
                     map.style.display = "none";
                     btn.style.backgroundColor = 'red';
