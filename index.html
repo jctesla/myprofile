@@ -79,7 +79,7 @@
                   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                       pdf.getPage(pageNum).then(page => {
                           const isMobile = window.innerWidth <= 768;
-                          const scale = isMobile ? 1.7 : 1.4;
+                          const scale = isMobile ? 1.7 : 1.2;
                           //const scale = 1.2;
 
                           const viewport = page.getViewport({ scale });
