@@ -67,20 +67,24 @@
 
             
             <div id="midoc" align ="center" >
-              <b>for download PDF &#128640; <a href="rsm_eng_0224_full.pdf">click here</a></b>
+              <b>for download PDF &#128640; <a href="rsm_eng_02509_ne_full_forUK.pdf">click here</a></b>
             </div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
             <script>
                 const pdfViewer = document.getElementById('midoc');
         
-                pdfjsLib.getDocument('rsm_eng_0224_full.pdf').promise.then(pdf => {
+                pdfjsLib.getDocument('rsm_eng_02509_ne_full_forUK.pdf').promise.then(pdf => {
                   const totalPages = pdf.numPages;
 
                   for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
                       pdf.getPage(pageNum).then(page => {
-                          const scale = 1.2;
+                          const isMobile = window.innerWidth <= 768;
+                          const scale = isMobile ? 1.7 : 1.2;
+                          //const scale = 1.2;
+          
+
                           const viewport = page.getViewport({ scale });
-                          const outputScale = window.devicePixelRatio || 1;
+                          const outputScale = window.devicePixelRatio || 5;
                           const canvas = document.createElement('canvas');
                          
                           //canvas.height = viewport.height;
@@ -142,6 +146,7 @@
               let cplongitude=0;
               let count=0;
 
+              
               async function getISS() {
                 const response = await fetch(isssrc);
                 const data = await response.json();
@@ -180,12 +185,12 @@
                   if (map.style.display === "none") {
                     map.style.display = "block";
                     btn.style.backgroundColor = 'lightblue';
-                    btn.innerHTML = "HIDE MAP";
+                    btn.innerHTML = "WITHOUT MAP";
                     doc.height=(window.innerHeight - 180).toString() + "px";
                   }else{
                     map.style.display = "none";
                     btn.style.backgroundColor = 'red';
-                    btn.innerHTML = "SHOW MAP";
+                    btn.innerHTML = "WITH MAP";
                     doc.height=(window.innerHeight).toString() + "px";
                   }
                 });
